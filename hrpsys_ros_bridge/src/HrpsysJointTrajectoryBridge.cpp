@@ -477,13 +477,12 @@ void HrpsysJointTrajectoryBridge::jointTrajectoryActionObj::onJointTrajectory(
   {
     if (groupname.length() > 0)
     { // group
-      ROS_INFO_STREAM("[" << parent->getInstanceName() << "] playPatternGroup: " << groupname);
-      parent->m_service0->playPatternOfGroup(groupname.c_str(), angles, duration);
+      ROS_INFO_STREAM("[" << parent->getInstanceName() << "] setJointAnglesSequenceOfGroup: " << groupname);
+      parent->m_service0->setJointAnglesSequenceOfGroup(groupname.c_str(), angles, duration);
     }
     else
     {
-      OpenHRP::dSequenceSequence rpy, zmp;
-      parent->m_service0->playPattern(angles, rpy, zmp, duration);
+      parent->m_service0->setJointAnglesSequence(angles, duration);
     }
   }
 
@@ -508,12 +507,34 @@ void HrpsysJointTrajectoryBridge::jointTrajectoryActionObj::onJointTrajectoryAct
 {
   ROS_INFO_STREAM("[" << parent->getInstanceName() << "] @onJointTrajectoryActionPreempt()");
   joint_trajectory_server->setPreempted();
+
+  if (groupname.length() > 0)
+  { // group
+    ROS_INFO_STREAM("[" << parent->getInstanceName() << "] clearJointAnglesOfGroup: " << groupname);
+    parent->m_service0->clearJointAnglesOfGroup(groupname.c_str());
+  }
+  else
+  { // fullbody
+    ROS_INFO_STREAM("[" << parent->getInstanceName() << "] clearJointAngles ");
+    parent->m_service0->clearJointAngles();
+  }
 }
 
 void HrpsysJointTrajectoryBridge::jointTrajectoryActionObj::onFollowJointTrajectoryActionPreempt()
 {
   ROS_INFO_STREAM("[" << parent->getInstanceName() << "] @onFollowJointTrajectoryActionPreempt()");
   follow_joint_trajectory_server->setPreempted();
+
+  if (groupname.length() > 0)
+  { // group
+    ROS_INFO_STREAM("[" << parent->getInstanceName() << "] clearJointAnglesOfGroup: " << groupname);
+    parent->m_service0->clearJointAnglesOfGroup(groupname.c_str());
+  }
+  else
+  { // fullbody
+    ROS_INFO_STREAM("[" << parent->getInstanceName() << "] clearJointAngles ");
+    parent->m_service0->clearJointAngles();
+  }
 }
 
 void HrpsysJointTrajectoryBridge::jointTrajectoryActionObj::onTrajectoryCommandCB(const trajectory_msgs::JointTrajectoryConstPtr& msg)

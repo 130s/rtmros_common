@@ -205,8 +205,7 @@ void HrpsysSeqStateROSBridge::onJointTrajectory(trajectory_msgs::JointTrajectory
   if ( duration.length() == 1 ) {
     m_service0->setJointAngles(angles[0], duration[0]);
   } else {
-    OpenHRP::dSequenceSequence rpy, zmp;
-    m_service0->playPattern(angles, rpy, zmp, duration);
+    m_service0->setJointAnglesSequence(angles, duration);
   }
 
   interpolationp = true;
@@ -225,10 +224,12 @@ void HrpsysSeqStateROSBridge::onFollowJointTrajectoryActionGoal() {
 
 void HrpsysSeqStateROSBridge::onJointTrajectoryActionPreempt() {
   joint_trajectory_server.setPreempted();
+  m_service0->clearJointAngles();
 }
 
 void HrpsysSeqStateROSBridge::onFollowJointTrajectoryActionPreempt() {
   follow_joint_trajectory_server.setPreempted();
+  m_service0->clearJointAngles();
 }
 
 void HrpsysSeqStateROSBridge::onTrajectoryCommandCB(const trajectory_msgs::JointTrajectoryConstPtr& msg) {
